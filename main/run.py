@@ -2,12 +2,31 @@ import pygame
 import sys
 import graphic.maps as maps
 from graphic import car
+from algorithm.dijkstra_algorithm import dijkstra
+from algorithm.dijkstra_algorithm import GraphUndirectedWeighted
 
 def main():
     clock = pygame.time.Clock()
     #map
     map = pygame.sprite.Group()
     map.add(maps.Map(0, 0, 1))
+
+    #Find path
+    g = GraphUndirectedWeighted(9)
+    g.add_edge(0, 1, 4)
+    g.add_edge(1, 7, 6)
+    g.add_edge(1, 2, 1)
+    g.add_edge(2, 3, 3)
+    g.add_edge(3, 7, 1)
+    g.add_edge(3, 4, 2)
+    g.add_edge(3, 5, 1)
+    g.add_edge(4, 5, 1)
+    g.add_edge(5, 6, 1)
+    g.add_edge(6, 7, 2)
+    g.add_edge(6, 8, 2)
+    g.add_edge(7, 8, 2)
+    shortest_path, distance = dijkstra(g, 0, 7)
+    print(shortest_path, distance)
 
     # start_x = maps.MAP_NAVS[0][0]
     # start_y = maps.MAP_NAVS[0][1]
@@ -48,7 +67,6 @@ def main():
         cars.update(route_1)
         cars2.update(route_2)
         cars3.update(route_3)
-
 
 
         cars.draw(screen)
