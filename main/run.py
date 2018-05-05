@@ -4,7 +4,7 @@ import graphic.maps as maps
 from graphic import car
 from algorithm.dijkstra_algorithm import dijkstra
 from algorithm.dijkstra_algorithm import GraphUndirectedWeighted
-
+import xlrd
 def main():
     clock = pygame.time.Clock()
     #map
@@ -12,41 +12,28 @@ def main():
     map.add(maps.Map(0, 0, 1))
 
     #Find path
-    g = GraphUndirectedWeighted(9)
-    g.add_edge(0, 1, 4)
-    g.add_edge(1, 7, 6)
-    g.add_edge(1, 2, 1)
-    g.add_edge(2, 3, 3)
-    g.add_edge(3, 7, 1)
-    g.add_edge(3, 4, 2)
-    g.add_edge(3, 5, 1)
-    g.add_edge(4, 5, 1)
-    g.add_edge(5, 6, 1)
-    g.add_edge(6, 7, 2)
-    g.add_edge(6, 8, 2)
-    g.add_edge(7, 8, 2)
-    shortest_path, distance = dijkstra(g, 0, 7)
+    g = GraphUndirectedWeighted(50)
+    toa_do_graph = get_toa_do_graph()
+    for i in range(0, len(toa_do_graph)-1):
+        g.add_edge(toa_do_graph[i][0], toa_do_graph[i][1], toa_do_graph[i][2])
+    shortest_path, distance = dijkstra(g, 1, 33)
     print(shortest_path, distance)
 
-    # start_x = maps.MAP_NAVS[0][0]
-    # start_y = maps.MAP_NAVS[0][1]
-    start_x = 150
-    start_y = 3
-    print(start_x, start_y)
-    maps.FINISH_INDEX = len(maps.MAP_NAVS) - 2
-
+    toa_do_real = get_toa_do_real()
+    print(toa_do_real)
+    route = []
+    for i in range(0, len(shortest_path)-1):
+        route.append([round(float(toa_do_real[shortest_path[i]-1][1]), 1), round(float(toa_do_real[shortest_path[i]-1][2]), 1)])
+    print(route)
     #test route.
-    route_1 = [[155.0, 3.0],[155.0, 124.0], [214.0, 124.0], [214.0, 283.0],
-             [150.0, 283.0], [150.0, 478.0], [41.0, 478.0], [41.0, 700.0]]
     route_2 = [[0.0, 186.0], [74.0, 186.0], [74.0, 0.0]]
     route_3 = [[494.0, 0.0], [494.0, 185.0], [595.0, 185.0], [595.0, 383.0], [549.0, 383.0], [549.0, 597.0],
                [740.0, 597.0], [740.0, 480.0], [870.0, 480.0], [870.0, 700.0]]
     #car
-    # start_angle = calculate_angle(maps.MAP_NAVS[0][0], maps.MAP_NAVS[0][1], maps.MAP_NAVS[1][0], maps.MAP_NAVS[1][1])
     cars = pygame.sprite.Group()
     cars2 = pygame.sprite.Group()
     cars3 = pygame.sprite.Group()
-    cars.add(car.Car(route_1[0][0], route_1[0][1], route_1[1][0], route_1[1][1]))
+    cars.add(car.Car(route[0][0], route[0][1], route[1][0], route[1][1]))
     cars2.add(car.Car(route_2[0][0], route_2[0][1], route_2[1][0], route_2[1][1]))
     cars3.add(car.Car(route_3[0][0], route_3[0][1], route_3[1][0], route_3[1][1]))
 
@@ -64,7 +51,7 @@ def main():
         map.draw(screen)
 
 
-        cars.update(route_1)
+        cars.update(route)
         cars2.update(route_2)
         cars3.update(route_3)
 
@@ -77,6 +64,30 @@ def main():
         pygame.display.flip()
         # Toc do Frame rate
         clock.tick(1000000)
+
+def get_toa_do_graph():
+    TOA_DO_GRAPH = []
+    with xlrd.open_workbook('../media/toa_do_processed.xlsx') as book:
+            sheet_1 = book.sheet_by_index(1)
+
+            node = [x for x in sheet_1.col_values(0)]
+            neighbor = [y for y in sheet_1.col_values(1)]
+            distance = [z for z in sheet_1.col_values(2)]
+
+            for i in range(1, len(node)):
+                TOA_DO_GRAPH.append((int(node[i]), int(neighbor[i]), int(distance[i])))
+    return TOA_DO_GRAPH
+
+def get_toa_do_real():
+    TOA_DO_REAL = []
+    with xlrd.open_workbook('../media/toa_do_processed.xlsx') as book:
+            sheet_0 = book.sheet_by_index(0)
+            node_name = [x for x in sheet_0.col_values(0)]
+            x_node = [y for y in sheet_0.col_values(1)]
+            y_node = [z for z in sheet_0.col_values(2)]
+            for i in range(1, len(node_name)):
+                TOA_DO_REAL.append((int(node_name[i]), int(x_node[i]), int(y_node[i])))
+    return TOA_DO_REAL
 
 if __name__ == "__main__":
     pygame.init()
@@ -103,3 +114,4 @@ if __name__ == "__main__":
 
     pygame.quit()
     sys.exit(0)
+
