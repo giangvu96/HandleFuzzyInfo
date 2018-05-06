@@ -28,8 +28,8 @@ class Car(pygame.sprite.Sprite):
                                     round(init_after_x, 1), round(init_after_y, 1))
         self.image, self.rect = rot_center(self.image, self.rect, self.dir)
         #Do dai dich chuyen
-        self.add_van_toc_x = 0.1
-        self.add_van_toc_y = 0.1
+        self.add_van_toc_x = 0.5
+        self.add_van_toc_y = 0.5
         self.initArray = 1
 
     def update(self, route):
@@ -43,15 +43,15 @@ class Car(pygame.sprite.Sprite):
                                     round(route[self.initArray][0], 1), round(route[self.initArray][1], 1))
                 self.image = pygame.transform.rotate(self.image, dir)
                 if(self.initArray == 3 or self.initArray == 5 or self.initArray == 7):
-                    self.add_van_toc_x = 0.2
-                    self.add_van_toc_y = 0.2
+                    self.add_van_toc_x = 1
+                    self.add_van_toc_y = 1
                 else:
-                    self.add_van_toc_x = 0.1
-                    self.add_van_toc_y = 0.1
+                    self.add_van_toc_x = 0.5
+                    self.add_van_toc_y = 0.5
 
-        print(self.x, self.y)
-        print(self.initArray)
-        print(len(route))
+        # print(self.x, self.y)
+        # print(self.initArray)
+        # print(len(route))
         self.x_before, self.y_before = self.x, self.y
         self.x, self.y = self.calculate_van_toc(route[self.initArray][0], route[self.initArray][1])
         self.x, self.y = round(self.x, 1), round(self.y, 1)
